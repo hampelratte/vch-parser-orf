@@ -39,7 +39,7 @@ public class OrfParser implements IWebParser {
 
     public static final String ID = OrfParser.class.getName();
 
-    protected static final String BASE_URI = "http://tvthek.orf.at";
+    protected static final String BASE_URI = "https://tvthek.orf.at";
     protected static final String A_BIS_Z = BASE_URI + "/profiles/a-z";
     protected static final String CHARSET = "UTF-8";
 
@@ -192,6 +192,7 @@ public class OrfParser implements IWebParser {
         String content = HttpUtils.get(opage.getUri().toString(), null, CHARSET);
         String playerJsonEncoded = HtmlParserUtils.getTag(content, "div[class~=jsb_VideoPlaylist]").attr("data-jsb");
         JSONObject result = new JSONObject(playerJsonEncoded);
+        System.out.println(result.toString(2));
         JSONObject playlist = result.getJSONObject("playlist");
         JSONArray videos = playlist.getJSONArray("videos");
         for (int i = 0; i < videos.length(); i++) {
@@ -228,7 +229,7 @@ public class OrfParser implements IWebParser {
         JSONArray sources = video.getJSONArray("sources");
         for (int i = 0; i < sources.length(); i++) {
             JSONObject source = sources.getJSONObject(i);
-            if(source.getString("delivery").equals("progressive") && source.getString("protocol").startsWith("http")) {
+            if(source.getString("delivery").equals("hls") && source.getString("protocol").startsWith("http")) {
                 String qualityString = source.getString("quality_string");
                 if(qualityPrio.containsKey(qualityString)) {
                     int prio = qualityPrio.get(qualityString);
